@@ -1,9 +1,9 @@
 const Total = (props) => {
-    console.log(props.total);
+    console.log(props);
     return (
         <>
         <p>
-            Number of exercises {props.total}
+            Number of exercises {props.parts.reduce((sum, part) => sum + part.exercises, 0)}
         </p>
         </>
     )
