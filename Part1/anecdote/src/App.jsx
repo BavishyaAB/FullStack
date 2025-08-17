@@ -19,10 +19,11 @@ function App() {
     copy[selected] += 1
     setVotes(copy)
   }
-  
+
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {votes[selected]} votes</p>
       <button onClick={handleVote}>vote</button>
       <button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))}>
         Next Anecdote
