@@ -15,6 +15,10 @@ function App() {
       {
         name: 'State of a component',
         exercises: 14
+      },
+      {
+        name: 'Redux',
+        exercises: 11
       }
     ]
   }
