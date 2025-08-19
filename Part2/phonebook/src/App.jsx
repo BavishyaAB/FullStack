@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import Person from './Components/Person'
+import Filter from './Components/Filter'
+import PersonForm from './Components/PersonForm'
 
 function App() {
   const originalPersons = [
@@ -12,7 +15,8 @@ const handleAddPerson = (e) => {
   e.preventDefault()
   const newPerson = {
     name: newName,
-    number: newNumber
+    number: newNumber,
+    id: persons.length + 1 // Simple ID generation
   }
   if(persons.some(person => person.name === newName)) {
     alert(`${newName} is already added to phonebook`)
@@ -24,7 +28,8 @@ const handleAddPerson = (e) => {
   setName('')
   setNumber('')
 }
-const filterPersons = (searchTerm) => {
+const filterPersons = (e) => {
+  const searchTerm = e.target.value
   console.log(searchTerm)
   if(searchTerm === '') {
     setPersons(originalPersons)
@@ -43,23 +48,19 @@ const [newNumber,setNumber] = useState('')
     <>
       <div>
       <h2>Phonebook</h2>
-        Filter with <input type="text" placeholder="Search..." onChange={(e) => filterPersons(e.target.value)}/>
+      <Filter filterPersons={filterPersons} />
       <h2>Add a new</h2>
-      <form onSubmit={handleAddPerson}>
-        <div>
-          Name: <input value={newName} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div>
-          Number: <input value={newNumber} onChange={(e) => setNumber(e.target.value)} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        onSubmit={handleAddPerson}
+        newName={newName}
+        setName={setName}
+        newNumber={newNumber}
+        setNumber={setNumber}
+      />
       <h2>Numbers</h2>
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {persons.map((person) => (
-            <li key={person.id}>{person.name}&nbsp;&nbsp;{person.number}</li>
+            <Person key={person.id} person={person} />
           ))}
         </ul>
       </div>
