@@ -16,10 +16,11 @@ const createPerson = (newPerson) => {
 }
 
 const updatePerson = (id, updatedPerson) => {
-  return axios.put(`${baseURL}/${id}`, updatedPerson).then(response => {
-    console.log('Updated person:', response.data)
-    return response.data
-  })
+    return axios.put(`${baseURL}/${id}`, updatedPerson)
+        .then(response => {
+            console.log('Updated person:', response.data)
+            return response.data
+        })
 }
 
 const deletePerson = (id) => {
@@ -27,8 +28,7 @@ const deletePerson = (id) => {
     console.log('Deleted person:', response.data)
     return response.data
   }).catch(error => {
-    console.error('Error deleting person:', error)
-    throw error
+    console.log('Error deleting person:', error)
   })
 }
 

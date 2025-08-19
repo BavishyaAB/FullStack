@@ -27,12 +27,21 @@ const handleAddPerson = (e) => {
     if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
       const existingPerson = persons.find(person => person.name === newName)
       const updatedPerson = { ...existingPerson, number: newNumber }
-      PersonService.updatePerson(existingPerson.id, updatedPerson).then(response => {
+      PersonService.updatePerson(existingPerson.id, updatedPerson,setMessage,setType).then(response => {
         console.log('Updated person:', response)
         setPersons(persons.map(person => person.id === existingPerson.id ? response : person))
         setMessage(`Updated ${newName}'s number`)
+        setType('success')
         setTimeout(() => {
           setMessage(null)
+        }, 5000)
+      }).catch(error => {
+        console.log('Error updating person:', error)
+        setMessage(`Information of ${updatedPerson.name} has already been removed from server`)
+        setType('error')
+        setTimeout(() => {
+          setMessage(null)
+          setType(null)
         }, 5000)
       })
     }
@@ -42,6 +51,7 @@ const handleAddPerson = (e) => {
   }
   PersonService.createPerson(newPerson).then(response => {
     setMessage(`Added ${newName} to phonebook`)
+    setType('success')
     setTimeout(() => {
       setMessage(null)
     }, 5000)
@@ -76,12 +86,13 @@ const handleDeletePerson = (id) => {
 const [newName,setName] = useState('')
 const [newNumber,setNumber] = useState('')
 const [message, setMessage] = useState(null)
+const [messageType, setType] = useState('success')
 
   return (
     <>
       <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} type = {messageType} />
       <Filter filterPersons={filterPersons} />
       <h2>Add a new</h2>
       <PersonForm
