@@ -4,18 +4,17 @@ import Filter from './Components/Filter'
 import PersonForm from './Components/PersonForm'
 import axios from 'axios'
 import { useEffect } from 'react'
+import PersonService from './Services/PersonService'
 
 function App() {
-  const originalPersons = [] 
+  const originalPersons = []
+  PersonService.getAllPersons().then(response => { originalPersons.push(...response) })
+  const [persons, setPersons] = useState([])
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-      .then(response => {
-        originalPersons.push(...response.data)
-        console.log('Original persons:', originalPersons)
-        setPersons(originalPersons)
-      })
+    PersonService.getAllPersons().then(response => {
+      setPersons([...response])
+    })
   }, [])
-const [persons, setPersons] = useState([...originalPersons])
 const handleAddPerson = (e) => {
   e.preventDefault()
   const newPerson = {
@@ -29,14 +28,18 @@ const handleAddPerson = (e) => {
     setNumber('')
     return
   }
+  PersonService.createPerson(newPerson).then(response => {
+    console.log('New person added:', response)
+  })
   setPersons(persons.concat(newPerson))
   setName('')
   setNumber('')
 }
 const filterPersons = (e) => {
   const searchTerm = e.target.value
-  console.log(searchTerm)
+  console.log("SearchTerm:", searchTerm)
   if(searchTerm === '') {
+    console.log('Original persons:', originalPersons)
     setPersons(originalPersons)
     console.log('Resetting to original list',originalPersons)
   }
