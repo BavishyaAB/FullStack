@@ -2,14 +2,19 @@ import { useState } from 'react'
 import Person from './Components/Person'
 import Filter from './Components/Filter'
 import PersonForm from './Components/PersonForm'
+import axios from 'axios'
+import { useEffect } from 'react'
 
 function App() {
-  const originalPersons = [
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-] // Keep a copy of the original list
+  const originalPersons = [] 
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons')
+      .then(response => {
+        originalPersons.push(...response.data)
+        console.log('Original persons:', originalPersons)
+        setPersons(originalPersons)
+      })
+  }, [])
 const [persons, setPersons] = useState([...originalPersons])
 const handleAddPerson = (e) => {
   e.preventDefault()
