@@ -20,7 +20,7 @@ const handleAddPerson = (e) => {
   const newPerson = {
     name: newName,
     number: newNumber,
-    id: persons.length + 1 // Simple ID generation
+    id: JSON.stringify(persons.length + 1) // Simple ID generation
   }
   if(persons.some(person => person.name === newName)) {
     alert(`${newName} is already added to phonebook`)
@@ -49,6 +49,14 @@ const filterPersons = (e) => {
   }
   
 }
+const handleDeletePerson = (id) => {
+  if(window.confirm(`Delete ${persons.find(person => person.id === id).name}?`)) {
+    PersonService.deletePerson(id).then(response => {
+      console.log('Person deleted:', response)
+      setPersons(persons.filter(person => person.id !== id))
+    })
+  }
+}
 const [newName,setName] = useState('')
 const [newNumber,setNumber] = useState('')
 
@@ -68,7 +76,7 @@ const [newNumber,setNumber] = useState('')
       <h2>Numbers</h2>
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {persons.map((person) => (
-            <Person key={person.id} person={person} />
+            <Person key={person.id} person={person} deletePerson={handleDeletePerson} />
           ))}
         </ul>
       </div>
