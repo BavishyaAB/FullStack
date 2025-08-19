@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Person from './Components/Person'
 import Filter from './Components/Filter'
 import PersonForm from './Components/PersonForm'
-import axios from 'axios'
+import Notification from './Components/Notification'
 import { useEffect } from 'react'
 import PersonService from './Services/PersonService'
 
@@ -30,6 +30,10 @@ const handleAddPerson = (e) => {
       PersonService.updatePerson(existingPerson.id, updatedPerson).then(response => {
         console.log('Updated person:', response)
         setPersons(persons.map(person => person.id === existingPerson.id ? response : person))
+        setMessage(`Updated ${newName}'s number`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
     }
     setName('')
@@ -37,6 +41,10 @@ const handleAddPerson = (e) => {
     return
   }
   PersonService.createPerson(newPerson).then(response => {
+    setMessage(`Added ${newName} to phonebook`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
     console.log('New person added:', response)
   })
   setPersons(persons.concat(newPerson))
@@ -67,11 +75,13 @@ const handleDeletePerson = (id) => {
 }
 const [newName,setName] = useState('')
 const [newNumber,setNumber] = useState('')
+const [message, setMessage] = useState(null)
 
   return (
     <>
       <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filterPersons={filterPersons} />
       <h2>Add a new</h2>
       <PersonForm
