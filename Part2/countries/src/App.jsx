@@ -5,6 +5,7 @@ import Search from "./Components/Search";
 import Message from "./Components/Message";
 import CountryList from "./Components/CountryList";
 import Country from "./Components/Country";
+import WeatherService from "./Services/WeatherService";
 
 function App() {
   const [countryName, setCountryName] = useState("");
@@ -14,6 +15,7 @@ function App() {
   const [countryInfo, setCountryInfo] = useState({});
   const [countryList, setCountryList] = useState([]);
   const [message, setMessage] = useState(null);
+  const [weatherData, setWeatherData] = useState({});
   useEffect(() => {
     // Fetch countries data from API
     CountryService.getAllCountries()
@@ -48,16 +50,7 @@ function App() {
       singleMatch = singleMatch !== undefined ? singleMatch : filteredCountries[0];
       console.log("Single country match:", singleMatch);
       // If exactly one country matches, fetch its detailed information
-      CountryService.getCountryInfo(singleMatch)
-        .then((data) => {
-          setCountryInfo(data);
-          setMessage(null);
-          setCountryList([]); // Clear country list when showing single match
-        })
-        .catch((error) => {
-          console.error("Error fetching country info:", error);
-          setMessage("Error fetching country information");
-        });
+      getCountryData(singleMatch);
     } else if (filteredCountries.length > 10) {
       // If multiple countries match, clear country info
       setCountryInfo({});
@@ -84,13 +77,32 @@ function App() {
         setMessage("Error fetching country information");
       });
   };
+  const getCountryData = (selectedCountry) => {
+    CountryService.getCountryInfo(selectedCountry)
+      .then((data) => {
+        setCountryInfo(data);
+        setMessage(null);
+        setCountryList([])
+        WeatherService.getWeather(data.capital[0]).then((weather) => {
+          setWeatherData(weather);
+          console.log("Weather data:", weather);
+        })
+        .catch((error) => {
+          console.error("Error fetching weather data:", error);
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching country info:", error);
+        setMessage("Error fetching country information");
+      });
+  };
   return (
     <>
       <h1>Countries</h1>
       <Search countryName={countryName} handleSearch={handleSearch} />
       <Message message={message} />
       <CountryList countries={countryList} handleCountrySelect={handleCountrySelect} />
-      <Country countryInfo={countryInfo} />
+      <Country countryInfo={countryInfo} weatherData={weatherData} />
     </>
   );
 }
