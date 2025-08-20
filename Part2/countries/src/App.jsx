@@ -72,12 +72,24 @@ function App() {
       setCountryInfo({}); // Clear country info when showing multiple matches
     }
   };
+  const handleCountrySelect = (name) => {
+    setCountryName(name);
+    CountryService.getCountryInfo(name)
+      .then((data) => {
+        setCountryInfo(data);
+        setMessage(null); // Clear country list when showing selected country
+      })
+      .catch((error) => {
+        console.error("Error fetching country info:", error);
+        setMessage("Error fetching country information");
+      });
+  };
   return (
     <>
       <h1>Countries</h1>
       <Search countryName={countryName} handleSearch={handleSearch} />
       <Message message={message} />
-      <CountryList countries={countryList} />
+      <CountryList countries={countryList} handleCountrySelect={handleCountrySelect} />
       <Country countryInfo={countryInfo} />
     </>
   );
