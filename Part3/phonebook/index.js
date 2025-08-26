@@ -23,6 +23,7 @@ const persons = [
       "number": "39-23-6423122"
     }
 ]
+app.get('/', (req, res) => {    console.log('PhoneBook App')});
 app.get('/info', (req, res) => {
   const timestamp = new Date();
   console.log(timestamp);
@@ -30,6 +31,15 @@ app.get('/info', (req, res) => {
 });
 app.get('/api/persons', (req, res) => {
     res.json(persons);
+});
+app.get('/api/persons/:id',(req,res)=>{
+    const id  = req.params.id;
+    const person = persons.find(p => p.id === id);
+    if (person) {
+        res.json(person);
+    } else {
+        res.status(404).send({ error: 'Person not found' });
+    }
 });
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
