@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const cors = require('cors')
 const app = express();
 dotenv.config();
 const MAX_ID = 10000;
@@ -30,12 +31,14 @@ const generateId = () => {
     const min = persons.length + 1;
     return (Math.floor(Math.random() * (MAX_ID-min))+min);
 }
+app.use(express.static('dist'))
+app.use(cors())
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 morgan.token('body', function(req,res) {
     return JSON.stringify(req.body);
 });
-app.get('/', (req, res) => {    console.log('PhoneBook App')});
+app.get('/', (req, res) => {console.log('PhoneBook App')});
 app.get('/info', (req, res) => {
   const timestamp = new Date();
   console.log(timestamp);
