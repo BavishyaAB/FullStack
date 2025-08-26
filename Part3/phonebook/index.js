@@ -1,7 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
-const PORT = 3001;
 const MAX_ID = 10000;
 const persons = [
     { 
@@ -85,6 +84,8 @@ app.post('/api/persons', (req, res) => {
     persons.push(newPerson);
     res.status(200).json(newPerson);
 })
+const PORT = process.env.PORT || 3001;
+console.log(PORT);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
