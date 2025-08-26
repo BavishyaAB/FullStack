@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const PORT = 3001;
 const MAX_ID = 10000;
@@ -29,6 +30,10 @@ const generateId = () => {
     return (Math.floor(Math.random() * (MAX_ID-min))+min);
 }
 app.use(express.json());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
+morgan.token('body', function(req,res) {
+    return JSON.stringify(req.body);
+});
 app.get('/', (req, res) => {    console.log('PhoneBook App')});
 app.get('/info', (req, res) => {
   const timestamp = new Date();
@@ -78,7 +83,7 @@ app.post('/api/persons', (req, res) => {
     };
     console.log(newPerson);
     persons.push(newPerson);
-    res.status(201).json(newPerson);
+    res.status(200).json(newPerson);
 })
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
