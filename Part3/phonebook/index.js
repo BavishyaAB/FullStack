@@ -23,8 +23,10 @@ const persons = [
       "number": "39-23-6423122"
     }
 ]
-app.get('/', (req, res) => {
-  res.send('PhoneBook Backend');
+app.get('/info', (req, res) => {
+  const timestamp = new Date();
+  console.log(timestamp);
+  res.send(`Phonebook has info for ${persons.length} people <br>${timestamp}`);
 });
 app.get('/api/persons', (req, res) => {
     res.json(persons);
