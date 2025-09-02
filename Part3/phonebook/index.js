@@ -14,7 +14,14 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 morgan.token('body', function(req,res) {
     return JSON.stringify(req.body);
 });
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
 
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+  next(error)
+}
 app.get('/', (req, res) => {console.log('PhoneBook App')});
 app.get('/info', (req, res) => {
   const timestamp = new Date();
@@ -28,7 +35,7 @@ app.get('/api/persons', (req, res) => {
       res.json(persons);
     });
 });
-app.get('/api/persons/:id',(req,res)=>{
+app.get('/api/persons/:id',(req,res,next)=>{
     const id  = req.params.id;
     PhoneBook.findById(id).then(person => {
       if (person) {
@@ -38,8 +45,7 @@ app.get('/api/persons/:id',(req,res)=>{
       }
     })
     .catch(err => {
-      console.error('Error fetching person:', err);
-      res.status(404).send({ error: 'Person not found' });
+      next(err);
     });
 });
 app.delete('/api/persons/:id', (req, res) => {
@@ -47,14 +53,13 @@ app.delete('/api/persons/:id', (req, res) => {
     if (!id) {
         return res.status(400).send({ error: 'ID is required' });
     }
-    const personIndex = persons.findIndex(p => p.id === id);
-    if (personIndex !== -1) {
-        persons.splice(personIndex, 1);
-        console.log(persons);
-        res.status(204).json(persons);
-    } else {
-        res.status(404).send({ error: 'Person not found' });
-    }
+    PhoneBook.findByIdAndDelete(id)
+        .then(() => {
+            res.status(204).end();
+        })
+        .catch(err => {
+            next(err);
+        });
 });
 app.post('/api/persons', (req, res) => {
     console.log(req.body);
@@ -75,6 +80,7 @@ app.post('/api/persons', (req, res) => {
       res.status(200).json(savedPerson);
     });
 })
+app.use(errorHandler);
 const PORT = process.env.PORT || 3001;
 
 mongoose.connect(url)
