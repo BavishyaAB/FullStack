@@ -16,11 +16,12 @@ const createPerson = (newPerson) => {
 }
 
 const updatePerson = (id, updatedPerson) => {
-    return axios.put(`${baseURL}/${id}`, updatedPerson)
-        .then(response => {
-            console.log('Updated person:', response.data)
-            return response.data
-        })
+  console.log('logging incoming id', id)
+  return axios.put(`${baseURL}/${id}`, updatedPerson)
+      .then(response => {
+          console.log('Updated person:', response.data)
+          return response.data
+      })
 }
 
 const deletePerson = (id) => {

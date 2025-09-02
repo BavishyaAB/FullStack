@@ -19,13 +19,13 @@ const handleAddPerson = (e) => {
   e.preventDefault()
   const newPerson = {
     name: newName,
-    number: newNumber,
-    id: JSON.stringify(persons.length + 1) // Simple ID generation
+    number: newNumber, 
   }
   if(persons.some(person => person.name === newName)) {
     //alert(`${newName} is already added to phonebook`)
     if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
       const existingPerson = persons.find(person => person.name === newName)
+      console.log('Found Person:',existingPerson)
       const updatedPerson = { ...existingPerson, number: newNumber }
       PersonService.updatePerson(existingPerson.id, updatedPerson,setMessage,setType).then(response => {
         console.log('Updated person:', response)

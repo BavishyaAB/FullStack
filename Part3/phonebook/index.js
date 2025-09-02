@@ -62,27 +62,40 @@ app.delete('/api/persons/:id', (req, res) => {
         });
 });
 app.post('/api/persons', (req, res) => {
-    console.log(req.body);
+    console.log('logging incoming request', req.body);
     const body = req.body;
-    if(!body) {
-        return res.status(400).send({ error: 'Content is missing' });
+    if(!body.name || !body.number) {
+        return res.status(400).send({ error: 'Request Body Missing' });
     }
     const newPerson = new PhoneBook({ name:body.name, number:body.number });
-    if (!body.name || !body.number) {
-        return res.status(400).send({ error: 'Name and number are required' });
-    }
-    // if (persons.find(p => p.name === name)) {
-    //     console.log('Name must be unique');
-    //     return res.status(400).send({ error: 'Name must be unique' });
-    // }
-    console.log(newPerson);
+    // PhoneBook.findOne({ name: body.name }).then(existingPerson => { 
+    //     if (existingPerson) {
+    //         console.log('Name must be unique');
+    //         return res.status(400).send({ error: 'Name must be unique' });
+    //     }   
+    // });
+    console.log('logging new person', newPerson);
     newPerson.save().then(savedPerson => {
-      res.status(200).json(savedPerson);
+        res.status(200).json(savedPerson);
     });
 })
-app.use(errorHandler);
+app.put('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id;
+    const body = req.body;
+    console.log('logging incoming request', body)
+    PhoneBook.findByIdAndUpdate(id, body, { new: true })
+        .then(updatedPerson => {
+            if (updatedPerson) {
+                res.json(updatedPerson);
+            } else {
+                res.status(404).send({ error: 'Person not found' });
+            }
+        })
+        .catch(err => {
+            next(err);
+        });
+});
 const PORT = process.env.PORT || 3001;
-
 mongoose.connect(url)
     .then(() => {
         console.log('Connected to MongoDB');
