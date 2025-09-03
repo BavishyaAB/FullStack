@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const PhoneBookSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -10,14 +10,14 @@ const PhoneBookSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
-        return /^\d{2,3}-\d+$/.test(v);
+        return /^\d{2,3}-\d+$/.test(v)
       },
     },
     required: true,
     minlength: 8,
     maxlength: 15
   },
-});
+})
 
 PhoneBookSchema.set('toJSON', {
   transform: (document, returnedObject) => {
