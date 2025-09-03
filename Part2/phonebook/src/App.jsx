@@ -55,9 +55,16 @@ const handleAddPerson = (e) => {
     setTimeout(() => {
       setMessage(null)
     }, 5000)
+    setPersons(persons.concat(newPerson))
     console.log('New person added:', response)
+  }).catch(error => {
+    setMessage(error.response.data.error)
+    setType('error')
+    setTimeout(() => {
+      setMessage(null)
+      setType(null)
+    }, 5000)
   })
-  setPersons(persons.concat(newPerson))
   setName('')
   setNumber('')
 }

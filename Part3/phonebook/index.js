@@ -19,7 +19,10 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
+  if(error.name === 'ValidationError') {
+    return response.status(400).send({ error: error.message })
+  }
   next(error)
 }
 app.get('/', (req, res) => {console.log('PhoneBook App')});
@@ -48,7 +51,7 @@ app.get('/api/persons/:id',(req,res,next)=>{
       next(err);
     });
 });
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).send({ error: 'ID is required' });
@@ -61,7 +64,7 @@ app.delete('/api/persons/:id', (req, res) => {
             next(err);
         });
 });
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     console.log('logging incoming request', req.body);
     const body = req.body;
     if(!body.name || !body.number) {
@@ -77,6 +80,9 @@ app.post('/api/persons', (req, res) => {
     console.log('logging new person', newPerson);
     newPerson.save().then(savedPerson => {
         res.status(200).json(savedPerson);
+    }).catch(err => {
+        console.error('Error saving person:', err);
+        next(err);
     });
 })
 app.put('/api/persons/:id', (req, res, next) => {
@@ -95,6 +101,7 @@ app.put('/api/persons/:id', (req, res, next) => {
             next(err);
         });
 });
+app.use(errorHandler);
 const PORT = process.env.PORT || 3001;
 mongoose.connect(url)
     .then(() => {

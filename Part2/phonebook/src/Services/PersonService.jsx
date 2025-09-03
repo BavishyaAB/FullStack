@@ -12,6 +12,9 @@ const createPerson = (newPerson) => {
   return axios.post(baseURL, newPerson).then(response => {
     console.log('Created person:', response.data)
     return response.data
+  }).catch(error => {
+    console.log('Error creating person:', error.response.data.error)
+    return Promise.reject(error)
   })
 }
 
